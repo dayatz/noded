@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var User = require('../core/models').User;
 
 var boardSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required:true },
     name: { type: String, required: true },
     description: String,
     public: { type: String, default: false },
@@ -13,13 +13,13 @@ var boardSchema = new Schema({
 });
 
 var listSchema = new Schema({
-    board: { type: Schema.Types.ObjectId, ref: 'Board' },
+    board: { type: Schema.Types.ObjectId, ref: 'Board', required: true },
     name : { type: String, required: true },
     added: { type: Date, default: Date.now() }
 });
 
 var todoSchema = new Schema({
-    board: { type: Schema.Types.ObjectId, ref: 'List' },
+    list: { type: Schema.Types.ObjectId, ref: 'List', required: true },
     name : { type: String, required: true },
     added: { type: Date, default: Date.now() },
     done: { type: Boolean, default: false }
