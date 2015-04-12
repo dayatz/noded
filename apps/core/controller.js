@@ -22,6 +22,7 @@ var isUserAuthenticated = function (req, res, next) {
     try {
         var tokenVerify = jwt.verify(token, config.token.jwtTokenSecret);
         if (tokenVerify) {
+            req.validateToken = tokenVerify;
             next();
         } else {
             res.json({ 'error': 'Unauthenticated' });
@@ -32,6 +33,10 @@ var isUserAuthenticated = function (req, res, next) {
 };
 
 var userAuth = function (req, res) {
+    if (req.method == 'GET') {
+        res.send('Noting to do here.');
+        return;
+    }
     var username = req.body.username;
     var password = req.body.password;
 

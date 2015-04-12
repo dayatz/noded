@@ -10,8 +10,8 @@ var isUserAuthenticated = controller.isUserAuthenticated;
 app.use('/users', core);
 app.use('/auth', userAuth);
 
-app.use('/organizer', organizer);
+app.use('/organizer', isUserAuthenticated, organizer);
 
 app.use('/secret', isUserAuthenticated, function (req, res) {
-    res.send('halo');
+    res.send('halo, ' + req.validateToken._id);
 });
