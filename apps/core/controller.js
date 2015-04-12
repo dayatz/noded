@@ -19,6 +19,9 @@ var viewUser = function (req, res) {
 
 var isUserAuthenticated = function (req, res, next) {
     var token = req.get('x-access-token');
+    if (!token) {
+        res.sendStatus(401);
+    }
     try {
         var tokenVerify = jwt.verify(token, config.token.jwtTokenSecret);
         if (tokenVerify) {

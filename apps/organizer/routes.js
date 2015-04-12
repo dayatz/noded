@@ -7,4 +7,10 @@ router.route('/board')
     .post(controllers.addBoard)
     .get(controllers.myBoard);
 
+router.route('/board/:boardId')
+    .get(controllers.boardView);
+
+router.route('/board/:boardId/list')
+    .post(controllers.addList);
+
 module.exports = router;

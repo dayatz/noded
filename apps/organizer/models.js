@@ -9,7 +9,8 @@ var boardSchema = new Schema({
     description: String,
     public: { type: String, default: false },
     added: { type: Date, default: Date.now() },
-    collaborators: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+    collaborators: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    lists: []
 });
 
 var listSchema = new Schema({
