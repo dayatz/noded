@@ -3,6 +3,7 @@ var router = express.Router();
 var controllers = require('./controller');
 
 router.route('/')
-    .post(controllers.addUser);
+    .post(controllers.addUser)
+    .get(controllers.viewUser);
 
 module.exports = router;

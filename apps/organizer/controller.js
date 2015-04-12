@@ -6,14 +6,14 @@ var addBoard = function (req, res) {
     board.save(function (err, board) {
         if (err) res.json({ 'error': err });
         res.json(board);
-    })
+    });
 };
 
 var myBoard = function (req, res) {
     models.Board.find(function (err, boards) {
         if (err) res.json({'error': err});
         res.json(boards);
-    })
+    });
 };
 
 module.exports.addBoard = addBoard;
