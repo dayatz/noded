@@ -7,14 +7,22 @@ var config = require('../../config');
 var addUser = function (req, res) {
     var user = new User(req.body);
     user.save(function (err, user) {
-        if (err) res.json({ 'error': err });
-        res.json(user);
+        if (err) res.json(err);
+
+        var token = generateToken(user);
+        res.json({
+            'token': token,
+            'user': user
+        });
     });
 };
 
 var viewUser = function (req, res) {
-    console.log(req.user);
-    res.send(req.user);
+    var userId = req.validateToken._id;
+    User.findById(userId).select('-password').exec(function (err, user) {
+        if (err) res.json(err);
+        res.json(user);
+    });
 };
 
 var isUserAuthenticated = function (req, res, next) {
@@ -31,7 +39,8 @@ var isUserAuthenticated = function (req, res, next) {
             res.json({ 'error': 'Unauthenticated' });
         }
     } catch(err) {
-        res.json({ 'error': err });
+        res.json(err);
+        return false;
     }
 };
 
@@ -40,14 +49,16 @@ var userAuth = function (req, res) {
         res.send('Noting to do here.');
         return;
     }
+
+    if (!req.body) res.sendStatus(400);
     var username = req.body.username;
     var password = req.body.password;
 
     User.findOne({username: username}, function (err, user) {
-        console.log(user);
-        if (err) res.sendStatus(401);
+        if (err) res.json(err);
         if (!user) res.sendStatus(401);
-        if (!user.validPassword(password)) res.sendStatus(401);
+
+        if (user && !user.validPassword(password)) res.sendStatus(401);
 
         if (user && user.validPassword(password)) {
             var token = generateToken(user);

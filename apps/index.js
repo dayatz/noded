@@ -7,7 +7,7 @@ var controller = require('./core/controller');
 var userAuth = controller.userAuth;
 var isUserAuthenticated = controller.isUserAuthenticated;
 
-app.use('/users', core);
+app.use('/user', core);
 app.use('/auth', userAuth);
 
 app.use('/organizer', isUserAuthenticated, organizer);
