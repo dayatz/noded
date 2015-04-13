@@ -8,7 +8,8 @@ router.route('/board')
     .get(controllers.myBoard);
 
 router.route('/board/:boardId')
-    .get(controllers.boardView);
+    .get(controllers.boardView)
+    .delete(controllers.deleteBoard);
 
 router.route('/board/:boardId/list')
     .post(controllers.addList);
