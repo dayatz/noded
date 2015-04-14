@@ -31,19 +31,20 @@ var boardView = function (req, res) {
         if (board) {
             if (board._user == userId || board.public == true || board._collaborators.indexOf(userId) > -1) {
                 var populateQuery = [
-                    {path: '_user', select: '_id username'},
-                    {path: '_lists', select: '-_board -_todos'},
-                    {path: '_collaborators', select: 'username'}
+                    { path: '_user', select: '_id username' },
+                    { path: '_lists', select: '-_board -_todos' },
+                    { path: '_collaborators', select: 'username' }
                 ];
                 board.populate(populateQuery, function (err, board) {
                     if (err) res.json(err);
-                    res.json(board)
+                    res.json(board);
                 });
             } else {
                 res.sendStatus(401);
             }
+        } else {
+            res.sendStatus(404);
         }
-        res.sendStatus(404);
     });
 };
 
@@ -60,6 +61,29 @@ var deleteBoard = function (req, res) {
             }
         }
         res.sendStatus(404);
+    });
+};
+
+var patchBoard = function (req, res) {
+    var userId = req.validateToken._id;
+    var boardId = req.params.boardId;
+
+    models.Board.findOne({_id: boardId}, function (err, board) {
+        if (board) {
+            if (board._user == userId || board._collaborators.indexOf(userId) > -1) {
+                for (var field in req.body) {
+                    if (board[field] !== undefined) board[field] = req.body[field];
+                }
+                board.save(function (err, board) {
+                    if (err) res.json(err);
+                    res.json(board);
+                });
+            } else {
+                res.sendStatus(401);
+            }
+        } else {
+            res.sendStatus(404);
+        }
     });
 };
 // end board
@@ -83,12 +107,23 @@ var addList = function (req, res) {
     });
 };
 
+// common functions
+var updateParams = function (data, model) {
+    console.log(data);
+    for (var field in data) {
+        if (model.hasOwnProperty(field)) {
+            model[field] = data[field];
+        }
+    }
+};
+
 module.exports = {
     // boards
     'addBoard': addBoard,
     'myBoard': myBoard,
     'boardView': boardView,
     'deleteBoard': deleteBoard,
+    'patchBoard': patchBoard,
 
     // lists
     'addList': addList

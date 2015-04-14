@@ -9,7 +9,8 @@ router.route('/board')
 
 router.route('/board/:boardId')
     .get(controllers.boardView)
-    .delete(controllers.deleteBoard);
+    .delete(controllers.deleteBoard)
+    .patch(controllers.patchBoard);
 
 router.route('/board/:boardId/list')
     .post(controllers.addList);
