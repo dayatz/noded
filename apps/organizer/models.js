@@ -13,11 +13,23 @@ var boardSchema = new Schema({
     _lists: [{ type: Schema.Types.ObjectId, ref: 'List'}]
 });
 
+boardSchema.pre('remove', function (next) {
+    mongoose.model('List').remove({_board: this._id}, function (err) {
+        console.log(err);
+    });
+    next();
+});
+
 var listSchema = new Schema({
     _board: { type: Schema.Types.ObjectId, ref: 'Board', required: true },
     name : { type: String, required: true },
     added: { type: Date, default: Date.now() },
     _todos: [{ type: Schema.Types.ObjectId, ref: 'Todo' }]
+});
+
+listSchema.pre('remove', function (next) {
+    Todo.find({_list: this._id}).remove();
+    next();
 });
 
 var todoSchema = new Schema({
