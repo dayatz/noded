@@ -1,5 +1,6 @@
 var models = require('./models');
 var isInArray = require('../core/controller').isInArray;
+var patchData = require('../core/controller').patchData;
 
 var addBoard = function (req, res) {
     if (!req.body) res.sendStatus(400);
@@ -110,21 +111,6 @@ var addRemoveCollaborator = function (req, res) {
             }
         }
     });
-};
-
-// others
-var patchData = function (data, model) {
-    for (var field in data) {
-        if (model[field] !== undefined) {
-            if (Object.prototype.toString.call(model[field]) == '[object Array]') {
-                if (model[field].indexOf(data[field]) == -1) {
-                    model[field].push(data[field]);
-                }
-            } else {
-                model[field] = data[field];
-            }
-        }
-    }
 };
 
 module.exports = {

@@ -88,8 +88,27 @@ var isInArray = function (data, array) {
     return array.indexOf(data) > -1;
 };
 
-module.exports.addUser = addUser;
-module.exports.viewUser = viewUser;
-module.exports.userAuth = userAuth;
-module.exports.isUserAuthenticated = isUserAuthenticated;
-module.exports.isInArray = isInArray;
+var boardPermission = function (board, userId) {
+    return (board._user == userId || board.public == true || board._collaborators.indexOf(userId) > -1);
+};
+
+var isOwner = function (obj, userId) {
+    return obj._user == userId;
+};
+
+var patchData = function (data, model) {
+    for (var field in data) {
+        if (model[field] !== undefined && Object.prototype.toString.call(model[field]) !== '[object Array]')
+            model[field] = data[field];
+    }
+};
+
+module.exports = {
+    'addUser': addUser,
+    'viewUser': viewUser,
+    'userAuth': userAuth,
+    'isUserAuthenticated': isUserAuthenticated,
+    'isInArray': isInArray,
+    'boardPermission': boardPermission,
+    'patchData': patchData
+};
