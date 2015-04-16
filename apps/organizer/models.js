@@ -15,7 +15,7 @@ var boardSchema = new Schema({
 
 boardSchema.pre('remove', function (next) {
     mongoose.model('List').remove({_board: this._id}, function (err) {
-        console.log(err);
+        if (err) console.log(err);
     });
     next();
 });
@@ -28,7 +28,11 @@ var listSchema = new Schema({
 });
 
 listSchema.pre('remove', function (next) {
-    Todo.find({_list: this._id}).remove();
+    mongoose.model('Todo').find({_list: this._id}).remove();
+    mongoose.model('Board').find({_id: this._board}, function (err, board) {
+        if (err) console.log(err);
+        board._lists.pull(this._id);
+    });
     next();
 });
 

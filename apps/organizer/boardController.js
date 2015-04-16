@@ -1,7 +1,6 @@
 var models = require('./models');
-var User = require('../core/models').User;
+var isInArray = require('../core/controller').isInArray;
 
-// board processes
 var addBoard = function (req, res) {
     if (!req.body) res.sendStatus(400);
     var board = new models.Board(req.body);
@@ -92,7 +91,6 @@ var patchBoard = function (req, res) {
 var addRemoveCollaborator = function (req, res) {
     var userId = req.validateToken._id;
     var boardId = req.params.boardId;
-    //var collaboratorId = req.params.collaboratorId;
     var collaboratorId = req.body.collaborator;
 
     models.Board.findOne({_id: boardId}, function (err, board) {
@@ -113,67 +111,8 @@ var addRemoveCollaborator = function (req, res) {
         }
     });
 };
-// end board
 
-var addList = function (req, res) {
-    if (!req.body) res.sendStatus(400);
-    var boardId = req.params.boardId;
-    var list = new models.List(req.body);
-    list._board = boardId;
-    list.save(function (err, list) {
-        if (err) res.json(err);
-
-        if (list) {
-            models.Board.findById(boardId, function (err, board) {
-                board._lists.push(list);
-                board.save();
-            });
-        }
-
-        res.json(list);
-    });
-};
-
-var viewList = function (req, res) {
-    var userId = req.validateToken._id;
-    var listId = req.params.listId;
-    var boardId = req.params.boardId;
-
-    models.List.findOne({_id: listId, _board: boardId}, function (err, list) {
-        if (list) {
-            list.populate('_board', '_user public _collaborators', function (err, board) {
-                if (boardPermission(list._board, userId)) {
-                    res.json(list);
-                }
-            });
-        } else {
-            res.sendStatus(404);
-        }
-    });
-};
-
-var deleteList = function (req, res) {
-    var userId = req.validateToken._id;
-    var listId = req.params.listId;
-    var boardId = req.params.boardId;
-
-    models.List.findOne({_id: listId, _board: boardId}, function (err, list) {
-        if (list) {
-            list.populate('_board', '_user', function (err, board) {
-                if (board._user == userId) {
-                    list.remove();
-                    res.json({'success': 'removed'});
-                } else {
-                    res.sendStatus(401);
-                }
-            });
-        } else {
-            res.sendStatus(404);
-        }
-    });
-};
-
-// common functions
+// others
 var patchData = function (data, model) {
     for (var field in data) {
         if (model[field] !== undefined) {
@@ -188,17 +127,6 @@ var patchData = function (data, model) {
     }
 };
 
-var boardPermission = function (board, userId) {
-    //if (board._user == userId || board.public == true || board._collaborators.indexOf(userId) > -1) return true;
-    //return false;
-    return (board._user == userId || board.public == true || board._collaborators.indexOf(userId) > -1);
-
-};
-
-var isInArray = function (data, array) {
-    return array.indexOf(data) > -1;
-};
-
 module.exports = {
     // boards
     'addBoard': addBoard,
@@ -206,10 +134,5 @@ module.exports = {
     'boardView': boardView,
     'deleteBoard': deleteBoard,
     'patchBoard': patchBoard,
-    'addRemoveCollaborator': addRemoveCollaborator,
-
-    // lists
-    'addList': addList,
-    'viewList': viewList,
-    'deleteList': deleteList
+    'addRemoveCollaborator': addRemoveCollaborator
 };

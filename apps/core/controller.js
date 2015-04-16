@@ -84,8 +84,12 @@ var comparePassword = function (password, userPassword) {
     return bcrypt.compareSync(password, userPassword);
 };
 
+var isInArray = function (data, array) {
+    return array.indexOf(data) > -1;
+};
 
 module.exports.addUser = addUser;
 module.exports.viewUser = viewUser;
 module.exports.userAuth = userAuth;
 module.exports.isUserAuthenticated = isUserAuthenticated;
+module.exports.isInArray = isInArray;
